@@ -8,30 +8,23 @@ export default function Home() {
   const audioRef = useRef<HTMLAudioElement | null>(null);
 
   useEffect(() => {
-    // Definimos a função dentro para ser usada aqui
     const startBgMusic = () => {
       const novoAudio = new Audio("/konn.MP3");
       novoAudio.volume = 0.5;
       novoAudio.loop = true;
       audioRef.current = novoAudio;
 
-      // Navegadores bloqueiam som automático sem interação.
-      // O catch evita que o erro trave a aplicação.
       novoAudio.play().catch(e => console.log("Aguardando interação para tocar áudio."));
     };
 
     startBgMusic();
-
-    // Função de limpeza (roda quando o componente é destruído)
     return () => {
       if (audioRef.current) {
         audioRef.current.pause();
       }
     };
-  }, []); // [] vazio significa que só roda UMA VEZ ao entrar na página
+  }, []); 
 
-  // ... (suas funções handleClick e playSound permanecem iguais)
-  
   const playSound = (src: string) => {
     if (audioRef.current) {
       audioRef.current.pause();
@@ -49,7 +42,17 @@ export default function Home() {
   };
   const handleYesButton = () => {
     setYes(true);
-    playSound("/canufeel.MP3");
+
+    if (audioRef.current) {
+      audioRef.current.pause();
+      audioRef.current.currentTime = 0; 
+    }
+    
+    const novoAudio = new Audio("/canufeel.MP3");
+    novoAudio.volume = 0.7;
+    audioRef.current = novoAudio;
+    novoAudio.loop = true;
+    novoAudio.play().catch(e => console.error("Erro ao tocar:", e));
   };
 
   const titulo = ["OY MATE!", "Como é amg?", "Me odeia s ou n", "coé kk", "👁️👄👁️", "?"]
