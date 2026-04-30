@@ -1,11 +1,47 @@
 'use client';
-import { useState, useRef } from 'react';
+import { useState, useRef, useEffect } from 'react';
 
 export default function Home() {
   const [i, setI] = useState(0);
   const [yes, setYes] = useState(false);
 
   const audioRef = useRef<HTMLAudioElement | null>(null);
+
+  useEffect(() => {
+    // Definimos a função dentro para ser usada aqui
+    const startBgMusic = () => {
+      const novoAudio = new Audio("/konn.MP3");
+      novoAudio.volume = 0.5;
+      novoAudio.loop = true;
+      audioRef.current = novoAudio;
+
+      // Navegadores bloqueiam som automático sem interação.
+      // O catch evita que o erro trave a aplicação.
+      novoAudio.play().catch(e => console.log("Aguardando interação para tocar áudio."));
+    };
+
+    startBgMusic();
+
+    // Função de limpeza (roda quando o componente é destruído)
+    return () => {
+      if (audioRef.current) {
+        audioRef.current.pause();
+      }
+    };
+  }, []); // [] vazio significa que só roda UMA VEZ ao entrar na página
+
+  // ... (suas funções handleClick e playSound permanecem iguais)
+  
+  const playSound = (src: string) => {
+    if (audioRef.current) {
+      audioRef.current.pause();
+      audioRef.current.currentTime = 0; 
+    }
+    const novoAudio = new Audio(src);
+    novoAudio.volume = 0.8;
+    audioRef.current = novoAudio;
+    novoAudio.play().catch(e => console.error("Erro ao tocar:", e));
+  };
 
   const handleClick = () => {
     setI(i + 1)
@@ -15,18 +51,6 @@ export default function Home() {
     setYes(true);
     playSound("/canufeel.MP3");
   };
-  const playSound = (src: string) => {
-   if (audioRef.current) {
-      audioRef.current.pause();
-      audioRef.current.currentTime = 0; 
-    }
-
-    const novoAudio = new Audio(src);
-    novoAudio.volume = 0.8;
-    audioRef.current = novoAudio;
-
-    novoAudio.play().catch(e => console.error("Erro ao tocar:", e));
-};
 
   const titulo = ["OY MATE!", "Como é amg?", "Me odeia s ou n", "coé kk", "👁️👄👁️", "?"]
   const images = ["/hatsune.png", "/tonymcmirela.png", "/lobis.jpg", "/paulie.jpg", "/failhann.jpg", "/saul.jpg"];
